@@ -3,7 +3,7 @@ Countdown Solver
 
 ### Description
 
-Based on the countdown number game, this will generate all binary tree permutations with N-1 leaves (N being the number of cmd line args). Brute force all permutations of mathematical operations for all permutations of numbers for all permutations of binary trees with (N-1) leaves. The countdown numbers game has been expanded to include the exponent operation. Input numbers may be used 0 or 1 times and the aim of the game is to combine the inputs to get the target number.
+Multi-threaded extended countdown number game solver. Based on the countdown number game, this will generate all binary tree permutations with N-1 leaves (N being the number of cmd line args). Brute force all permutations of mathematical operations for all permutations of numbers for all permutations of binary trees with (N-1) leaves. The countdown numbers game has been expanded to include the exponent operation. Input numbers may be used 0 or 1 times and the aim of the game is to combine the inputs to get the target number.
 
 
 ### Usage
