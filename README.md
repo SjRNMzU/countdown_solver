@@ -11,7 +11,7 @@ Multi-threaded extended countdown number game solver. Based on the countdown num
 ./countdown [input numbers] [target]
 ```
 
-### Example
+### Examples
 ```
 ▶ ./countdown 3 7 15 53 55 89 5243
 Tree permutations: 42
