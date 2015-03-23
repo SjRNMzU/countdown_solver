@@ -59,6 +59,30 @@ Explaination:
 ./countdown 2 3 5 7 65537  0.02s user 0.00s system 257% cpu 0.008 total
 ```
 
+```
+▶ time ./countdown 2 3 5 7 11 13 17 639
+Tree permutations: 132
+Target number: 639
+Best solution: 639
+Tree:
+             o
+               \
+                 o
+                / \
+              o     o
+               \     \
+                o     o
+
+
+Operations:
+POW     MUL     SUB     ADD     ADD     ADD
+Numbers:
+3       13      7       2       5       11      17
+Explaination:
+( 3 + ( ( 13 * ( 7 ^( 2 ) ) ) + ( 5 + ( 11 - 17 ) ) ) ) = 639
+./countdown 2 3 5 7 11 13 17 639  4.83s user 0.02s system 786% cpu 0.617 total
+```
+
 
 ### Compilation
 `clang++ main.cpp -o countdown --std=c++11 -O2`
