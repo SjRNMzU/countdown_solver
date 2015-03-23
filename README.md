@@ -1,14 +1,59 @@
-countdown
+Countdown Solver
 =================
 
-Based on the countdown number game, will generate all binary tree permutations with N-1 leaves. 
-Brute force all permutations of mathematical operations and numbers and numbers.
-The countdown numbers game has been expanded to include the exponent operation.
+### Description
 
-#compile with clang++
-clang++ main.cpp --std=c++11 -o countdown
+Based on the countdown number game, this will generate all binary tree permutations with N-1 leaves (N being the number of cmd line args). Brute force all permutations of mathematical operations for all permutations of numbers for all permutations of binary trees with (N-1) leaves. The countdown numbers game has been expanded to include the exponent operation. Input numbers may be used 0 or 1 times and the aim of the game is to combine the inputs to get the target number.
 
-#first N-1 numbers are used as the input numbers, Nth number is target
-#This will attept to form an exquation generating the traget value using 
-#the input numbers only once
-./countdown 75 50 2 3 8 7 812
+
+### Usage
+```
+./countdown [input numbers] [target]
+```
+
+### Example
+```
+▶ ./countdown 3 7 15 53 55 89 5243
+Tree permutations: 42
+Target number: 5243
+Best solution: 5243
+Tree:
+          o
+         / \
+       o     o
+        \   /
+         o o
+
+
+Operations:
+MUL     MUL     MUL     ADD     SUB
+Numbers:
+7       15      53      3       89      55
+Explaination:
+( ( 7 * ( 15 * 53 ) ) - ( ( 3 * 89 ) + 55 ) ) = 5243
+
+```
+
+
+Extended version also works with exponential operator.
+
+```
+▶ ./countdown 2 3 5 7 65536
+Tree permutations: 5
+Target number: 65536
+Best solution: 65536
+Tree:
+          o
+           \
+             o
+            /
+           o
+
+
+Operations:
+MUL     SUB     POW
+Numbers:
+2       3       7       5
+Explaination:
+( 2 ^( ( ( 3 * 7 ) - 5 ) ) ) = 65536
+```
