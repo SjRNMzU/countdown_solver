@@ -38,9 +38,9 @@ Explaination:
 Extended version also works with exponential operator.
 
 ```
-▶ ./countdown 2 3 5 7 65536
+▶ time ./countdown 2 3 5 7 65537
 Tree permutations: 5
-Target number: 65536
+Target number: 65537
 Best solution: 65536
 Tree:
           o
@@ -56,4 +56,9 @@ Numbers:
 2       3       7       5
 Explaination:
 ( 2 ^( ( ( 3 * 7 ) - 5 ) ) ) = 65536
+./countdown 2 3 5 7 65537  0.02s user 0.00s system 257% cpu 0.008 total
 ```
+
+
+### Compilation
+`clang++ main.cpp -o countdown --std=c++11 -O2`
