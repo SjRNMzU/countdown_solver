@@ -67,28 +67,25 @@ Target number: 639
 Number of trees: 132
 Best solution: 639
 Tree:
-                   o
-                /
-             o
-           /
-        o
-      /
-    o
-   /
- o
-/
-
+                o
+              /
+           o
+         /
+       o
+      / \
+    o     o
+     \
+      o
 
 
 Operations:
 POW     MUL     SUB     ADD     ADD     ADD
 Numbers:
-7       2       13      17      3       5       11
+5       11      2       7       3       13      17
 Explanation:
-( ( ( ( ( ( 7 ^ 2 ) ^ 7 ) ^ 7 ) ^ 7 ) ^ 7 ) ^ 7 ) = 639
-./countdown 2 3 5 7 11 13 17 639  0.27s user 0.01s system 607% cpu 0.045 total
+( ( ( ( 5 * ( 11 ^ 2 ) ) + ( 7 - 3 ) ) + 13 ) + 17 ) = 639
+./countdown 2 3 5 7 11 13 17 639  0.92s user 0.05s system 694% cpu 0.140 total
 ```
-
 
 ### Compilation
 `clang++ main.cpp -o countdown --std=c++1y -Ofast -funroll-loops`

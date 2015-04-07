@@ -49,9 +49,9 @@ std::unordered_map<long long, struct tnode *> trees;
 
 //Func prototypes
 std::string explain_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
-                const std::vector<int> &numbers, int num_index=0, int op_index=0);
+                const std::vector<int> &numbers, int *num_index, int *op_index);
 long double execute_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
-                const std::vector<int> &numbers, int &num_index, int &op_index);
+                const std::vector<int> &numbers, int *num_index, int *op_index);
 void permutateTreeOptions(struct tnode *tree, std::vector<int> numbers);
 void buildAllTrees(struct tnode *node);
 
@@ -178,7 +178,7 @@ int main(int argc, char *argv[])
     std::cout << std::endl;
     std::cout << "Explanation:" << std::endl;
 
-    std::string calc_explained = explain_tree(min->tree, min->ops, min->numbers);
+    std::string calc_explained = explain_tree(min->tree, min->ops, min->numbers, new int(0), new int(0));
     std::cout << calc_explained << " = " << min->answer << std::endl;
 
     return EXIT_SUCCESS;
@@ -209,8 +209,7 @@ void permutateTreeOptions(struct tnode *tree, std::vector<int> numbers)
 
         do{
             //execute tree + airth options + numbers perm
-            int a=0,b=0;
-            long double ret = execute_tree(tree, ops, numbers, a, b);
+            long double ret = execute_tree(tree, ops, numbers, new int(0), new int(0));
             if(!std::isfinite(ret))
                 continue;
 
@@ -235,7 +234,7 @@ void permutateTreeOptions(struct tnode *tree, std::vector<int> numbers)
 }
 
 long double execute_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
-                const std::vector<int> &numbers, int &num_index, int &op_index)
+                const std::vector<int> &numbers, int *num_index, int *op_index)
 {
     //set ops to tree nodes
     long double left=0,right=0,result=0;
@@ -243,19 +242,19 @@ long double execute_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
     if(tree->left != NULL)
         left = execute_tree(tree->left, ops, numbers, num_index, op_index);
     else{
-        left = numbers[num_index];
-        num_index++;
+        left = numbers[*num_index];
+        (*num_index)++;
     }
     
     if(tree->right != NULL)
         right = execute_tree(tree->right, ops, numbers, num_index, op_index);
     else{
-        right = numbers[num_index];
-        num_index++;
+        right = numbers[*num_index];
+        (*num_index)++;
     }
 
     /* we now have our first non ignore operator    */
-    switch(ops[op_index]){
+    switch(ops[*op_index]){
     case ARITH_OP::_add:
         result = left + right;
         break;
@@ -275,12 +274,12 @@ long double execute_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
         result = pow( left , right );
         break;
     }
-    op_index++;
+    (*op_index)++;
     return result;
 }
 
 std::string explain_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
-                const std::vector<int> &numbers, int num_index, int op_index)
+                const std::vector<int> &numbers, int *num_index, int *op_index)
 {
     //set ops to tree nodes
     std::string left,right,result;
@@ -288,19 +287,19 @@ std::string explain_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
     if(tree->left != NULL)
         left = explain_tree(tree->left, ops, numbers, num_index, op_index);
     else{
-        left = std::to_string( numbers[num_index] );
-        num_index++;
+        left = std::to_string( numbers[*num_index] );
+        (*num_index)++;
     }
     
     if(tree->right != NULL)
         right = explain_tree(tree->right, ops, numbers, num_index, op_index);
     else{
-        right = std::to_string( numbers[num_index] );
-        num_index++;
+        right = std::to_string( numbers[*num_index] );
+        (*num_index)++;
     }
 
     /* we now have our first non ignore operator    */
-    switch(ops[op_index]){
+    switch(ops[*op_index]){
     case ARITH_OP::_add:
         result = "( " + left + " + " + right + " )";
         break;
@@ -320,6 +319,6 @@ std::string explain_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
         result = "( " + left + " ^ " + right + " )";
         break;
     }
-    op_index++;
+    (*op_index)++;
     return result;
 }
