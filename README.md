@@ -88,6 +88,9 @@ Explanation:
 ```
 
 ### Compilation
+
+C++14 compatable compiler is required.
+
 `clang++ main.cpp -o countdown --std=c++1y -Ofast -funroll-loops`
 
 ##### Debug
