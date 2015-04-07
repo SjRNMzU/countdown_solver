@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <functional>
 #include <mutex>
+#include <future>
 #include <thread>
 
 #include <unistd.h>
@@ -23,19 +24,16 @@
  *  Track minimized error
  */
 
+//Arithmetic operations and their names
+#define NUM_OPS 6
+enum ARITH_OP { _add = 0, _sub, _mul, _div, _ignore, _pow };
+const char *OPS[] = {"ADD", "SUB", "MUL", "DIV", "IGNORE", "POW"};
 
-//shared vars
 std::vector<int> numbers;
 int target = 0;
 
-//Arithmetic operations and their names
-enum ARITH_OP { _add = 0, _sub, _mul, _div, _ignore, _pow };
-const char *OPS[] = {"ADD", "SUB", "MUL", "DIV", "IGNORE", "POW"};
-#define NUM_OPS 6
-
 //Store a solution to numbers game
 typedef struct { 
-    std::mutex mtx;
     struct tnode *tree;
     std::vector<int> numbers;
     std::vector<ARITH_OP> ops;
@@ -43,28 +41,35 @@ typedef struct {
     long double diff = -1.0;
 } solution;
 
-solution *min = new solution;
+solution *min = new solution();
+std::mutex sol_mtx;
 
 //Store map of all possible trees for N leaves
 std::unordered_map<long long, struct tnode *> trees;
 
 //Func prototypes
 std::string explain_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
-                const std::vector<int> &numbers, int &num_index, int &op_index);
+                const std::vector<int> &numbers, int num_index=0, int op_index=0);
 long double execute_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
                 const std::vector<int> &numbers, int &num_index, int &op_index);
 void permutateTreeOptions(struct tnode *tree, std::vector<int> numbers);
 void buildAllTrees(struct tnode *node);
 
 
+void usage()
+{
+    std::cerr << "Usage: ./countdown [ input numbers ] [ target ]" << std::endl;
+}
+
 //Parse inputs to program
-void parseInputs(int argc, char *argv[])
+bool parseInputs(int argc, char *argv[])
 {
     for(int i=1; i<argc-1;++i){
         int a = atoi(argv[i]);
         numbers.push_back(a);
     }
     target = atoi(argv[argc-1]);
+    return(numbers.size() > 1);
 }
 
 //Recursilvly transverse all paths of root_node tree expanding all untaken paths
@@ -127,23 +132,34 @@ void buildAllTrees(struct tnode *node)
 
 int main(int argc, char *argv[])
 {
-    parseInputs(argc, argv);
+    //get input numbers and target
+    if(!parseInputs(argc, argv)){
+        usage();
+        exit(EXIT_FAILURE);
+    }
+
+    //Build all tree permutations with N-1 leaves
     struct tnode *root_node = new struct tnode;
     buildAllTrees(root_node);
+
     std::cout << "Tree permutations: " << trees.size() << std::endl;
     std::cout << "Target number: " << target << std::endl;
 
-    //New thread per tree structure
-    std::vector<std::thread *> threads;
-
-    //open a thread per tree, try all permutations of operations and number on the tree
-    for(auto it = trees.begin(); it != trees.end(); ++it){
-        threads.push_back( new std::thread( permutateTreeOptions, it->second, numbers ) );
+    //for each tree permutation launch brute force for numbers and arith ops
+    std::vector< std::future<void> > promises;
+    for(auto tree: trees){
+        promises.emplace_back( std::async(std::launch::any, permutateTreeOptions, tree.second, numbers) );
+    }
+    // for(auto it: promises){
+    for(size_t i=0; i<promises.size(); ++i){
+        promises[i].get();
     }
 
-    for(std::thread* t: threads){
-        t->join();
-    }
+    std::cout << "Number of trees: " << trees.size() << std::endl;
+
+    //assert atleast 1 tree perm wa made and min stuct has been set
+    assert(trees.size() > 0);
+    assert(min->diff >= 0.0);
 
     std::cout << "Best solution: " << min->answer << std::endl;
     std::cout << "Tree: " << std::endl << min->tree->print() << std::endl;
@@ -158,14 +174,14 @@ int main(int argc, char *argv[])
     for(int a: min->numbers){
         std::cout << a << "\t";
     }
-    std::cout << std::endl;
 
-    std::cout << "Explaination:" << std::endl;
-    int a=0,b=0;
-    std::string calc_explained = explain_tree(min->tree, min->ops, min->numbers, a, b);
+    std::cout << std::endl;
+    std::cout << "Explanation:" << std::endl;
+
+    std::string calc_explained = explain_tree(min->tree, min->ops, min->numbers);
     std::cout << calc_explained << " = " << min->answer << std::endl;
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 
@@ -173,24 +189,23 @@ void permutateTreeOptions(struct tnode *tree, std::vector<int> numbers)
 {
     sort(numbers.begin(), numbers.end());
     //for permutations of tree operations
-    size_t tree_nodes = tree->leaves();
+    size_t tree_nodes = tree->nodes();
 
+    //create vector of operations and fill with first op
     std::vector<ARITH_OP> ops;
-    for(size_t i = 1; i < tree_nodes; i++){
+    for(size_t i = 0; i < tree_nodes; i++){
         ops.push_back( static_cast<ARITH_OP>(0) );
     }
 
     //while iterated over all of the tree nodes
-    for(size_t j=1; j < pow(NUM_OPS, tree_nodes) ;j++){
+    for(size_t j=0; j < pow(NUM_OPS, tree_nodes); j++){
 
+        //set arith ops for incrementing j, should overflow counter to base num_ops
         ops[0] = static_cast<ARITH_OP>(j % NUM_OPS);
-        for(size_t i=1; i < tree_nodes-1; i++){
+        for(size_t i=1; i < tree_nodes; i++){
            int c = ( j / static_cast<size_t>( pow(NUM_OPS, i) )  ) % NUM_OPS;
            ops[i] = static_cast<ARITH_OP>(c);
         }
-
-        if(static_cast<size_t>(ops[tree_nodes-1]) > NUM_OPS-1)
-            break;
 
         do{
             //execute tree + airth options + numbers perm
@@ -199,28 +214,21 @@ void permutateTreeOptions(struct tnode *tree, std::vector<int> numbers)
             if(!std::isfinite(ret))
                 continue;
 
-            //abs eturning less than 0?
-            // long double diff = abs(ret - target);
-            long double diff = ret - target;
-            if(diff < 0.0)
-                diff = -diff;
+            long double diff = fabs(ret - target);
 
-            assert(diff >= 0);
+            //check for overflow
+            assert(diff >= 0.0);
 
             //check if another thread has found the answer
             if(min->diff == 0.0){
                 return;
             }
-            if(diff < min->diff || min->diff < 0){
-                min->mtx.lock();
-                if(diff < min->diff || min->diff < 0){
-                    min->diff = diff;
-                    min->tree = tree;
-                    min->numbers = numbers;
-                    min->answer = ret;
-                    min->ops = ops;
+            if(diff < min->diff || min->diff < 0.0){
+                std::lock_guard<std::mutex> lock(sol_mtx);
+                if(diff < min->diff || min->diff < 0.0){
+                    //copy new solution into min solution
+                    min = new solution({ .tree = tree, .numbers = numbers, .ops = ops, .answer=ret, .diff=diff });
                 }
-                min->mtx.unlock();
             }
         }while(next_permutation(numbers.begin(), numbers.end()));
     }
@@ -272,7 +280,7 @@ long double execute_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
 }
 
 std::string explain_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
-                const std::vector<int> &numbers, int &num_index, int &op_index)
+                const std::vector<int> &numbers, int num_index, int op_index)
 {
     //set ops to tree nodes
     std::string left,right,result;
@@ -309,7 +317,7 @@ std::string explain_tree(struct tnode *tree, const std::vector<ARITH_OP> &ops,
         result = "0";
         break;
     case ARITH_OP::_pow:
-        result = "( " + left + " ^( " + right + " ) )";
+        result = "( " + left + " ^ " + right + " )";
         break;
     }
     op_index++;

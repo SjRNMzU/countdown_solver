@@ -15,7 +15,7 @@ struct tnode {
     tnode(){};
 
     //count the number of leaves from this node downwards
-    const size_t leaves(void) const
+    size_t leaves(void) const
     {
         size_t lsum = 0, rsum = 0;
         //left or right is a tnode, or increment count
@@ -33,7 +33,7 @@ struct tnode {
     };
 
     //return number of nodes in tree form this node downwards
-    const size_t nodes(void) const
+    size_t nodes(void) const
     {
         size_t lsum = 0, rsum = 0;
         //left or right is a tnode, or increment count
@@ -47,7 +47,7 @@ struct tnode {
     };
 
     //return max depth from this node
-    const size_t depth(void) const
+    size_t depth(void) const
     {
         size_t ld = 0, rd = 0;
         //left or right is a tnode, or increment count
@@ -73,7 +73,7 @@ struct tnode {
     };
 
     //Get size of tree form this node downwards in bytes
-    const size_t size(void) const
+    size_t size(void) const
     {
         return this->nodes() * sizeof(struct tnode);
     };

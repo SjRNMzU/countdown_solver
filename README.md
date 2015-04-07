@@ -41,6 +41,7 @@ Extended version also works with exponential operator.
 ▶ time ./countdown 2 3 5 7 65537
 Tree permutations: 5
 Target number: 65537
+Number of trees: 5
 Best solution: 65536
 Tree:
           o
@@ -54,11 +55,14 @@ Operations:
 MUL     SUB     POW
 Numbers:
 2       3       7       5
-Explaination:
-( 2 ^( ( ( 3 * 7 ) - 5 ) ) ) = 65536
-./countdown 2 3 5 7 65537  0.02s user 0.00s system 257% cpu 0.008 total
+Explanation:
+( 2 * ( ( 3 * 7 ) * 3 ) ) = 65536
+./countdown 2 3 5 7 65537  0.00s user 0.00s system 131% cpu 0.004 total
 ```
 
 
 ### Compilation
-`clang++ main.cpp -o countdown --std=c++11 -O2`
+`clang++ main.cpp -o countdown --std=c++1y -Ofast -funroll-loops`
+
+##### Debug
+`clang++ -std=c++1y main.cpp -o countdown -g -g3 -ggdb -Wall -Wextra -Werror -DDEBUG`
