@@ -64,24 +64,29 @@ Explanation:
 ▶ time ./countdown 2 3 5 7 11 13 17 639
 Tree permutations: 132
 Target number: 639
+Number of trees: 132
 Best solution: 639
 Tree:
+                   o
+                /
              o
-               \
-                 o
-                / \
-              o     o
-               \     \
-                o     o
+           /
+        o
+      /
+    o
+   /
+ o
+/
+
 
 
 Operations:
 POW     MUL     SUB     ADD     ADD     ADD
 Numbers:
-3       13      7       2       5       11      17
-Explaination:
-( 3 + ( ( 13 * ( 7 ^( 2 ) ) ) + ( 5 + ( 11 - 17 ) ) ) ) = 639
-./countdown 2 3 5 7 11 13 17 639  4.83s user 0.02s system 786% cpu 0.617 total
+7       2       13      17      3       5       11
+Explanation:
+( ( ( ( ( ( 7 ^ 2 ) ^ 7 ) ^ 7 ) ^ 7 ) ^ 7 ) ^ 7 ) = 639
+./countdown 2 3 5 7 11 13 17 639  0.27s user 0.01s system 607% cpu 0.045 total
 ```
 
 
