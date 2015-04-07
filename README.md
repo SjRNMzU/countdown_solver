@@ -11,7 +11,7 @@ Multi-threaded extended countdown number game solver. Based on the countdown num
 ./countdown [input numbers] [target]
 ```
 
-### Example
+### Examples
 ```
 ▶ ./countdown 3 7 15 53 55 89 5243
 Tree permutations: 42
@@ -58,6 +58,30 @@ Numbers:
 Explanation:
 ( 2 * ( ( 3 * 7 ) * 3 ) ) = 65536
 ./countdown 2 3 5 7 65537  0.00s user 0.00s system 131% cpu 0.004 total
+```
+
+```
+▶ time ./countdown 2 3 5 7 11 13 17 639
+Tree permutations: 132
+Target number: 639
+Best solution: 639
+Tree:
+             o
+               \
+                 o
+                / \
+              o     o
+               \     \
+                o     o
+
+
+Operations:
+POW     MUL     SUB     ADD     ADD     ADD
+Numbers:
+3       13      7       2       5       11      17
+Explaination:
+( 3 + ( ( 13 * ( 7 ^( 2 ) ) ) + ( 5 + ( 11 - 17 ) ) ) ) = 639
+./countdown 2 3 5 7 11 13 17 639  4.83s user 0.02s system 786% cpu 0.617 total
 ```
 
 
