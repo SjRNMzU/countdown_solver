@@ -88,7 +88,7 @@ Explanation:
 ```
 
 ### Compilation
-`clang++ main.cpp -o countdown --std=c++1y -Ofast -funroll-loops`
+`clang++ main.cpp -o countdown --std=c++14 -Ofast -funroll-loops`
 
 ##### Debug
-`clang++ -std=c++1y main.cpp -o countdown -g -g3 -ggdb -Wall -Wextra -Werror -DDEBUG`
+`clang++ -std=c++14 main.cpp -o countdown -g -g3 -ggdb -Wall -Wextra -Werror -DDEBUG`
