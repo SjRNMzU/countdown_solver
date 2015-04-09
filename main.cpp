@@ -213,7 +213,7 @@ void permutateTreeOptions(struct tnode *tree, std::vector<int> numbers)
             if(!std::isfinite(ret))
                 continue;
 
-            long double diff = fabs(ret - target);
+            long double diff = fabs(ret - static_cast<long double>(target) );
 
             //check for overflow
             assert(diff >= 0.0);
